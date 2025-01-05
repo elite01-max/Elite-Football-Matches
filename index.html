@@ -205,6 +205,19 @@
                 if (loader) loader.remove();
             });
         }
+        window.addEventListener('DOMContentLoaded', function () {
+            const downloadButton = document.createElement('button');
+            downloadButton.id = 'downloadButton';
+            downloadButton.textContent = 'Download APK';
+
+            // Add click event to open the download page
+            downloadButton.addEventListener('click', function () {
+                window.location.href = 'download.html'; // Navigate to the new HTML file
+            });
+
+            // Append the button to the body
+            document.body.appendChild(downloadButton);
+        });
     </script>
     
 </body>
