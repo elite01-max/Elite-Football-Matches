@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite tips Download</title>
+    <link href="./styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <div class="container-fluid">
+            <img class="navbar-brand" href="#" src="./logo.png" width="90px" height="90px">Logo
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./about.html">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./terms.html">Terms & Condition</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="done"></div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                EliteTips.com
+            </div>
+
+            <div class="footer-links">
+                <a href="./terms.html">Terms</a>
+                <a href="about.html">About</a>
+            </div>
+
+            <div class="footer-social">
+                <a href="#" target="_blank">Facebook</a>
+                <a href="#" target="_blank">Whatsapp</a>
+                <a href="#" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiXPc-Ac1clS0YqX5xWguQugyl36yCp4w",
+            authDomain: "elite-football-tips-4c0e5.firebaseapp.com",
+            databaseURL: "https://elite-football-tips-4c0e5-default-rtdb.firebaseio.com/",
+            projectId: "elite-football-tips-4c0e5",
+            storageBucket: "elite-football-tips-4c0e5.appspot.com",
+            messagingSenderId: "183348316759",
+            appId: "1:183348316759:android:401e24ee0d05cd7f80f112"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Add event listener to start fetching data
+        document.addEventListener("DOMContentLoaded", function () {
+            // Create and add the loader
+            const loader = document.createElement("div");
+            loader.id = "loader";
+            loader.classList.add("loader");
+            loader.textContent = "Loading...";
+            document.body.appendChild(loader);
+
+            // Fetch data
+            readData();
+        });
+
+        function readData() {
+            const dbRef = ref(database, 'free2');
+
+            // Create the big card container
+            const bigCard = document.createElement('div');
+            bigCard.classList.add('card-1');
+
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const data = childSnapshot.val();
+
+                        // Create card container
+                        const card = document.createElement('div');
+                        card.classList.add('card');
+
+                        const matchInfo = document.createElement('div');
+                        matchInfo.classList.add('match-info');
+
+                        const leagueDiv = document.createElement('div');
+                        leagueDiv.classList.add('league');
+                        const leagueP = document.createElement('p');
+                        leagueP.textContent = data.league;
+                        leagueDiv.appendChild(leagueP);
+
+                        const dateTimeDiv = document.createElement('div');
+                        dateTimeDiv.classList.add('date-time');
+                        const dateP = document.createElement('p');
+                        dateP.innerHTML = `<strong>DATE:</strong> <span class="date">${data.date}</span>`;
+                        const timeP = document.createElement('p');
+                        timeP.innerHTML = `<strong>TIME:</strong> <span class="time">${data.time}</span>`;
+                        dateTimeDiv.appendChild(dateP);
+                        dateTimeDiv.appendChild(timeP);
+
+                        const matchDetailsDiv = document.createElement('div');
+                        matchDetailsDiv.classList.add('match-details');
+
+                        const homeTeamDiv = document.createElement('div');
+                        homeTeamDiv.classList.add('team', 'home-team');
+                        const homeLogo = document.createElement('img');
+                        homeLogo.src = data.logo1;
+                        homeLogo.alt = "Home Team Logo";
+                        homeLogo.classList.add('team-logo');
+                        const homeTeamName = document.createElement('p');
+                        homeTeamName.classList.add('team-name');
+                        homeTeamName.textContent = data.team1;
+                        homeTeamDiv.appendChild(homeLogo);
+                        homeTeamDiv.appendChild(homeTeamName);
+
+                        const statusDiv = document.createElement('div');
+                        statusDiv.classList.add('status');
+                        const statusIcon = document.createElement('img');
+                        statusIcon.src = data.status;
+                        statusIcon.alt = "Status Icon";
+                        statusIcon.classList.add('status-icon');
+                        const scoreP = document.createElement('p');
+                        scoreP.classList.add('score');
+                        scoreP.textContent = data.score;
+                        statusDiv.appendChild(statusIcon);
+                        statusDiv.appendChild(scoreP);
+
+                        const awayTeamDiv = document.createElement('div');
+                        awayTeamDiv.classList.add('team', 'away-team');
+                        const awayLogo = document.createElement('img');
+                        awayLogo.src = data.logo2;
+                        awayLogo.alt = "Away Team Logo";
+                        awayLogo.classList.add('team-logo');
+                        const awayTeamName = document.createElement('p');
+                        awayTeamName.classList.add('team-name');
+                        awayTeamName.textContent = data.team2;
+                        awayTeamDiv.appendChild(awayLogo);
+                        awayTeamDiv.appendChild(awayTeamName);
+
+                        matchDetailsDiv.appendChild(homeTeamDiv);
+                        matchDetailsDiv.appendChild(statusDiv);
+                        matchDetailsDiv.appendChild(awayTeamDiv);
+
+                        const predictedOddsDiv = document.createElement('div');
+                        predictedOddsDiv.classList.add('predicted-odds');
+                        const predictionDiv = document.createElement('div');
+                        predictionDiv.classList.add('prediction');
+                        const pickP = document.createElement('p');
+                        pickP.innerHTML = `<strong>PICK:</strong> <span class="pick">${data.pick}</span>`;
+                        const oddsP = document.createElement('p');
+                        oddsP.innerHTML = `<strong>ODDS:</strong> <span class="odds">${data.odds}</span>`;
+                        predictionDiv.appendChild(pickP);
+                        predictionDiv.appendChild(oddsP);
+                        predictedOddsDiv.appendChild(predictionDiv);
+
+                        matchInfo.appendChild(leagueDiv);
+                        matchInfo.appendChild(dateTimeDiv);
+                        matchInfo.appendChild(matchDetailsDiv);
+                        matchInfo.appendChild(predictedOddsDiv);
+
+                        card.appendChild(matchInfo);
+
+                        // Append each card to the big card
+                        bigCard.appendChild(card);
+                    });
+
+                    // Append the big card to the body
+                    //document.body.appendChild(bigCard);
+                    document.querySelector('.done').appendChild(bigCard);
+                    
+
+                    // Remove loader after success
+                    const loader = document.getElementById("loader");
+                    if (loader) loader.remove();
+                } else {
+                    console.log("No data available");
+
+                    // Remove loader even if no data is found
+                    const loader = document.getElementById("loader");
+                    if (loader) loader.remove();
+                }
+            }).catch((error) => {
+                console.error("Error reading data:", error);
+
+                // Check for network-related error
+                if (error.message.includes("network")) {
+                    alert("Network error: Please check your internet connection.");
+                }
+
+                // Remove loader in case of error
+                const loader = document.getElementById("loader");
+                if (loader) loader.remove();
+            });
+        }
+
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.classList.toggle('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+            const downloadButton = document.createElement('button');
+            downloadButton.id = 'downloadButton';
+            downloadButton.textContent = 'Download APK';
+
+            // Add click event to open the download page
+            downloadButton.addEventListener('click', function () {
+                window.location.href = 'download.html'; // Navigate to the new HTML file
+            });
+
+            // Append the button to the body
+            document.body.appendChild(downloadButton);
+        });
+    </script>
+</body>
+</html>
