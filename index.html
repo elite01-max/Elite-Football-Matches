@@ -53,12 +53,10 @@
         </div>
     </footer>
 
-
     <script type="module">
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
+        import { getDatabase, ref, query, orderByKey, limitToLast, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+    
         const firebaseConfig = {
             apiKey: "AIzaSyCiXPc-Ac1clS0YqX5xWguQugyl36yCp4w",
             authDomain: "elite-football-tips-4c0e5.firebaseapp.com",
@@ -68,48 +66,51 @@
             messagingSenderId: "183348316759",
             appId: "1:183348316759:android:401e24ee0d05cd7f80f112"
         };
-
+    
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-
+    
         // Add event listener to start fetching data
         document.addEventListener("DOMContentLoaded", function () {
-            // Create and add the loader
             const loader = document.createElement("div");
             loader.id = "loader";
             loader.classList.add("loader");
             loader.textContent = "Loading...";
             document.body.appendChild(loader);
-
-            // Fetch data
+    
+            // Fetch the latest three cards
             readData();
         });
-
+    
         function readData() {
             const dbRef = ref(database, 'free2');
-
-            // Create the big card container
+            const recentCardsQuery = query(dbRef, orderByKey(), limitToLast(5)); // Fetch latest three entries
+    
             const bigCard = document.createElement('div');
             bigCard.classList.add('card-1');
-
-            get(dbRef).then((snapshot) => {
+    
+            get(recentCardsQuery).then((snapshot) => {
                 if (snapshot.exists()) {
+                    // Reverse the data to display in descending order
+                    const dataArray = [];
                     snapshot.forEach((childSnapshot) => {
-                        const data = childSnapshot.val();
-
-                        // Create card container
+                        dataArray.push(childSnapshot.val());
+                    });
+                    dataArray.reverse();
+    
+                    dataArray.forEach((data) => {
                         const card = document.createElement('div');
                         card.classList.add('card');
-
+    
                         const matchInfo = document.createElement('div');
                         matchInfo.classList.add('match-info');
-
+    
                         const leagueDiv = document.createElement('div');
                         leagueDiv.classList.add('league');
                         const leagueP = document.createElement('p');
                         leagueP.textContent = data.league;
                         leagueDiv.appendChild(leagueP);
-
+    
                         const dateTimeDiv = document.createElement('div');
                         dateTimeDiv.classList.add('date-time');
                         const dateP = document.createElement('p');
@@ -118,10 +119,10 @@
                         timeP.innerHTML = `<strong>TIME:</strong> <span class="time">${data.time}</span>`;
                         dateTimeDiv.appendChild(dateP);
                         dateTimeDiv.appendChild(timeP);
-
+    
                         const matchDetailsDiv = document.createElement('div');
                         matchDetailsDiv.classList.add('match-details');
-
+    
                         const homeTeamDiv = document.createElement('div');
                         homeTeamDiv.classList.add('team', 'home-team');
                         const homeLogo = document.createElement('img');
@@ -133,7 +134,7 @@
                         homeTeamName.textContent = data.team1;
                         homeTeamDiv.appendChild(homeLogo);
                         homeTeamDiv.appendChild(homeTeamName);
-
+    
                         const statusDiv = document.createElement('div');
                         statusDiv.classList.add('status');
                         const statusIcon = document.createElement('img');
@@ -145,7 +146,7 @@
                         scoreP.textContent = data.score;
                         statusDiv.appendChild(statusIcon);
                         statusDiv.appendChild(scoreP);
-
+    
                         const awayTeamDiv = document.createElement('div');
                         awayTeamDiv.classList.add('team', 'away-team');
                         const awayLogo = document.createElement('img');
@@ -157,11 +158,11 @@
                         awayTeamName.textContent = data.team2;
                         awayTeamDiv.appendChild(awayLogo);
                         awayTeamDiv.appendChild(awayTeamName);
-
+    
                         matchDetailsDiv.appendChild(homeTeamDiv);
                         matchDetailsDiv.appendChild(statusDiv);
                         matchDetailsDiv.appendChild(awayTeamDiv);
-
+    
                         const predictedOddsDiv = document.createElement('div');
                         predictedOddsDiv.classList.add('predicted-odds');
                         const predictionDiv = document.createElement('div');
@@ -173,65 +174,38 @@
                         predictionDiv.appendChild(pickP);
                         predictionDiv.appendChild(oddsP);
                         predictedOddsDiv.appendChild(predictionDiv);
-
+    
                         matchInfo.appendChild(leagueDiv);
                         matchInfo.appendChild(dateTimeDiv);
                         matchInfo.appendChild(matchDetailsDiv);
                         matchInfo.appendChild(predictedOddsDiv);
-
+    
                         card.appendChild(matchInfo);
-
-                        // Append each card to the big card
+    
                         bigCard.appendChild(card);
                     });
-
-                    // Append the big card to the body
-                    //document.body.appendChild(bigCard);
+    
                     document.querySelector('.done').appendChild(bigCard);
-                    
-
-                    // Remove loader after success
+    
                     const loader = document.getElementById("loader");
                     if (loader) loader.remove();
                 } else {
                     console.log("No data available");
-
-                    // Remove loader even if no data is found
                     const loader = document.getElementById("loader");
                     if (loader) loader.remove();
                 }
             }).catch((error) => {
                 console.error("Error reading data:", error);
-
-                // Check for network-related error
+    
                 if (error.message.includes("network")) {
                     alert("Network error: Please check your internet connection.");
                 }
-
-                // Remove loader in case of error
+    
                 const loader = document.getElementById("loader");
                 if (loader) loader.remove();
             });
         }
-
-        function toggleMenu() {
-            const menu = document.querySelector('.menu');
-            menu.classList.toggle('active');
-        }
-
-        window.addEventListener('DOMContentLoaded', function () {
-            const downloadButton = document.createElement('button');
-            downloadButton.id = 'downloadButton';
-            downloadButton.textContent = 'Download APK';
-
-            // Add click event to open the download page
-            downloadButton.addEventListener('click', function () {
-                window.location.href = 'download.html'; // Navigate to the new HTML file
-            });
-
-            // Append the button to the body
-            document.body.appendChild(downloadButton);
-        });
     </script>
+    
 </body>
 </html>
